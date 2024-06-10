@@ -1,62 +1,74 @@
+import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.List;
 
-public class Biblioteca 
-{
+public class Biblioteca {
+    private List<Livro> biblioteca = new ArrayList<>();
+    private JTextArea textArea;
 
-    private ArrayList<Livro> biblioteca = new ArrayList<>();
-    private Scanner scanner = new Scanner(System.in);
+    public Biblioteca() {
+        JFrame frame = new JFrame("Minha Biblioteca Pessoal");
+        frame.setSize(500, 500);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-    public void adicionarLivro() {
-        System.out.print("Digite o título do livro: ");
-        String titulo = scanner.nextLine();
-        System.out.print("Digite o autor do livro: ");
-        String autor = scanner.nextLine();
-        System.out.print("Digite o gênero do livro: ");
-        String genero = scanner.nextLine();
+        JPanel panel = new JPanel();
 
-        Livro novoLivro = new Livro(titulo, autor, genero);
-        biblioteca.add(novoLivro);
-        System.out.println();
-        System.out.println("Sucesso!!, Pressione Enter para voltar ao menu...");
-        scanner.nextLine(); // aguarda a entrada do usuário
+        JButton botao1 = new JButton("Adicionar Livro");
+        JButton botao2 = new JButton("Listar Livros");
+        JButton botao3 = new JButton("Remover Livro");
+
+        botao1.addActionListener(e -> adicionarLivro());
+        botao2.addActionListener(e -> listarLivros());
+
+        panel.add(botao1);
+        panel.add(botao2);
+        panel.add(botao3);
+
+        textArea = new JTextArea(20, 40);
+        textArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        panel.add(scrollPane);
+
+        frame.add(panel);
+        frame.setVisible(true);
     }
 
-    public void listarLivros() {
-        if (biblioteca.isEmpty()) {
-            System.out.println("Não há livros na biblioteca.");
-        } else {
-            System.out.println("Lista de Livros:");
-            System.out.println(); 
-            for (Livro livro : biblioteca) {
-             
-                System.out.println("Título: " + livro.getTitulo());
-                System.out.println("Autor: " + livro.getAutor());
-                System.out.println("Gênero: " + livro.getGenero());
-                System.out.println(); // linha em branco entre os livros
-            }
-            System.out.println("Pressione Enter para voltar ao menu...");
-            scanner.nextLine(); // aguarda a entrada do usuário
+    private void adicionarLivro() {
+        JTextField tituloField = new JTextField(20);
+        JTextField autorField = new JTextField(20);
+        JTextField generoField = new JTextField(20);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.add(new JLabel("Título:"));
+        panel.add(tituloField);
+        panel.add(new JLabel("Autor:"));
+        panel.add(autorField);
+        panel.add(new JLabel("Gênero:"));
+        panel.add(generoField);
+
+        int result = JOptionPane.showConfirmDialog(null, panel, "Adicionar Livro",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (result == JOptionPane.OK_OPTION) {
+            String titulo = tituloField.getText();
+            String autor = autorField.getText();
+            String genero = generoField.getText();
+
+            Livro livro = new Livro(titulo, autor, genero);
+            biblioteca.add(livro);
+
+            JOptionPane.showMessageDialog(null, "Livro adicionado com sucesso!");
         }
     }
 
-    public void removerLivro() {
-        if (biblioteca.isEmpty()) {
-            System.out.println("Não há livros para remover.");
-        } else {
-            System.out.println("Escolha o número do livro a ser removido:");
-            for (int i = 0; i < biblioteca.size(); i++) {
-                System.out.println((i + 1) + ". " + biblioteca.get(i).getTitulo());
-            }
-            int indice = scanner.nextInt();
-            scanner.nextLine(); // limpar o buffer
-            if (indice > 0 && indice <= biblioteca.size()) {
-                biblioteca.remove(indice - 1);
-                System.out.println("Livro removido com sucesso!");
-            } else {
-                System.out.println("Número de livro inválido.");
-            }
+    private void listarLivros() {
+        StringBuilder builder = new StringBuilder();
+        for (Livro livro : biblioteca) {
+            builder.append("Título: ").append(livro.getTitulo()).append("\n");
+            builder.append("Autor: ").append(livro.getAutor()).append("\n");
+            builder.append("Gênero: ").append(livro.getGenero()).append("\n\n");
         }
+        textArea.setText(builder.toString());
     }
 }
-
